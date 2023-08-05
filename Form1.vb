@@ -1,20 +1,31 @@
 Imports System.Threading.Tasks
 Public Class Form1
 
-    Dim roulette As Integer = 0
-    Dim rcnt As Integer = 0
+    Dim roulette, rcnt, atari, start As Integer
+    Dim sc, getsc As Long
     Dim rand As New System.Random()
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' 各項目の初期化
+        sc = 50
+        Lab_sc.Text = Format(sc, "#,0")
     End Sub
     Private Async Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        ' --メダルチェック--
+        If sc = 0 Then
+            MessageBox.Show("メダルがありません。" & vbLf & "最初からやり直してください", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+        ' ------------------
+
         Button1.Enabled = False
 
-        ' --回転数--
-        Dim cnt As Integer
-        cnt = Val(Lab_cnt.Text)
-        Lab_cnt.Text = cnt + 1
+        ' --スタート処理--
+        start += 1
+        Lab_cnt.Text = Format(start, "#,0")
+        sc -= 1
+        Lab_sc.Text = Format(sc, "#,0")
         ' ----------
 
         ' --結果の計算--
@@ -30,7 +41,7 @@ Public Class Form1
         ' --------------
 
         ' --デバッグで結果操作--
-        ' arr = {1, 1, 1}
+        ' arr = {7, 7, 7}
         ' ----------------------
 
         ' --天井--
@@ -55,7 +66,7 @@ Public Class Form1
                 Debug.Write(" リーチ")
             End If
         Else
-            End If
+        End If
         Debug.WriteLine("")
         ' ----------------
 
@@ -115,16 +126,34 @@ Public Class Form1
 
         ' --当選判定--
         If Lab_st.Text = "　リーチ！" Then
+            Await Task.Delay(1000)
             If arr(0) = arr(1) Then
+                atari += 1
+                Lab_atari.Text = Format(atari, "#,0")
+
                 If arr(0) Mod 2 = 0 Then
                     Lab_st.ForeColor = Color.Blue
                     Lab_st.Text = "大当たり！"
+
+                    sc += 100
+                    getsc += 100
 
                 Else
                     Lab_st.ForeColor = Color.Red
                     Lab_st.Text = "大当たり！"
 
+                    If arr(0) = 7 Then
+                        sc += 1000
+                        getsc += 1000
+                    Else
+                        sc += 500
+                        getsc += 500
+                    End If
+
                 End If
+
+                Lab_sc.Text = Format(sc, "#,0")
+                Lab_getsc.Text = Format(getsc, "#,0")
             Else
                 Lab_st.ForeColor = Color.Black
                 Lab_st.Text = "　はずれ！"
